@@ -16,3 +16,7 @@ Project Freedom.
 
 ## Data
 金額データはブラウザの localStorage に保存されます。GitHubには保存されません。
+
+
+## Icon Fix
+Added PNG apple-touch-icon for iPhone home screen.
