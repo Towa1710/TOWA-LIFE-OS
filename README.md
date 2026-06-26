@@ -1,2 +1,11 @@
-# TOWA-LIFE-OS
-My personal financial dashboard.
+# TOWA LIFE OS
+
+30歳までに総資産1,000万円を目指すための、個人用ライフダッシュボード。
+
+## Features
+- 総資産の自動計算
+- 30歳1000万円までの達成率
+- 月次入力
+- 資産推移グラフ
+- 生活防衛資金の目安
+- ホーム画面追加対応
