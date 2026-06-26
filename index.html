@@ -3,232 +3,367 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#07111f" />
+  <meta name="theme-color" content="#060914" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="TOWA OS" />
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="icon.svg">
-  <title>TOWA LIFE OS</title>
+  <meta name="apple-mobile-web-app-title" content="TOWA LIFE" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon.svg" />
+  <title>TOWA LIFE OS V2</title>
   <style>
     :root{
-      --bg:#07111f; --bg2:#0b1a2e; --card:#10243b; --card2:#14324a;
-      --text:#f3f7fb; --muted:#91a4b8; --line:rgba(255,255,255,.10);
-      --accent:#6ee7d8; --green:#74f29a; --red:#ff6b7a; --gold:#ffd166;
+      --bg:#060914; --panel:#0d1425; --panel2:#111b31; --glass:rgba(255,255,255,.07);
+      --line:rgba(255,255,255,.10); --text:#f7fbff; --muted:#91a0b6;
+      --cyan:#66f3e4; --blue:#7b8cff; --green:#7dff9b; --red:#ff7381; --gold:#ffd56a;
+      --shadow:0 24px 80px rgba(0,0,0,.42);
     }
-    *{box-sizing:border-box}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
     body{
-      margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      background:radial-gradient(circle at top left,#17365a 0,#07111f 45%,#050914 100%);
-      color:var(--text); min-height:100vh; padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+      margin:0; min-height:100vh; color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
+      background:
+        radial-gradient(circle at 10% -10%,rgba(102,243,228,.28),transparent 35%),
+        radial-gradient(circle at 95% 10%,rgba(123,140,255,.24),transparent 34%),
+        linear-gradient(180deg,#070b18 0%,#050711 100%);
+      overflow-x:hidden;
+      padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
     }
-    .app{max-width:520px;margin:0 auto;padding:22px 18px 92px}
-    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-    .brand{display:flex;gap:12px;align-items:center}
+    body::before{
+      content:"";position:fixed;inset:0;pointer-events:none;opacity:.35;
+      background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+      background-size:36px 36px;
+      mask-image:linear-gradient(180deg,black,transparent 75%);
+    }
+    .app{max-width:560px;margin:0 auto;padding:20px 16px 98px}
+    .top{display:flex;align-items:center;justify-content:space-between;margin:4px 0 18px}
+    .brand{display:flex;align-items:center;gap:12px}
     .logo{
-      width:52px;height:52px;border-radius:18px;background:linear-gradient(135deg,#80fff3,#5870ff);
-      color:#07111f;display:grid;place-items:center;font-weight:900;font-size:26px;
-      box-shadow:0 10px 35px rgba(110,231,216,.25)
+      width:52px;height:52px;border-radius:18px;display:grid;place-items:center;font-weight:950;font-size:25px;
+      background:linear-gradient(135deg,var(--cyan),var(--blue));color:#050711;box-shadow:0 16px 45px rgba(102,243,228,.22)
     }
-    h1{font-size:26px;margin:0;letter-spacing:.3px}
-    .sub{font-size:13px;color:var(--muted);margin-top:3px}
-    .pill{border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:999px;padding:10px 13px;color:#dbe7f3;font-size:13px}
+    .eyebrow{font-size:12px;letter-spacing:.13em;color:var(--cyan);font-weight:800}
+    h1{font-size:25px;margin:1px 0 0;letter-spacing:-.03em}
+    .datePill{padding:10px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.055);font-size:13px;color:#d9e3f0}
+    .screen{display:none;animation:fade .25s ease}.screen.active{display:block}
+    @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
     .hero{
-      background:linear-gradient(150deg,rgba(110,231,216,.22),rgba(20,50,74,.82));
-      border:1px solid rgba(255,255,255,.12); border-radius:34px; padding:24px;
-      box-shadow:0 20px 70px rgba(0,0,0,.35); margin-bottom:16px
+      position:relative;overflow:hidden;padding:24px;border-radius:34px;border:1px solid rgba(255,255,255,.13);
+      background:linear-gradient(145deg,rgba(102,243,228,.16),rgba(123,140,255,.10) 42%,rgba(17,27,49,.90));
+      box-shadow:var(--shadow);
     }
-    .label{color:var(--muted);font-size:14px}
-    .big{font-size:48px;font-weight:900;letter-spacing:-1.5px;margin:10px 0 12px}
-    .bar{height:16px;border-radius:999px;background:rgba(255,255,255,.13);overflow:hidden;margin:14px 0 16px}
-    .fill{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:inherit;transition:.45s}
-    .row{display:flex;justify-content:space-between;gap:12px;align-items:center}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
-    .mini{background:rgba(5,13,24,.55);border:1px solid rgba(255,255,255,.06);border-radius:22px;padding:16px}
-    .mini b{display:block;font-size:25px;margin-top:8px}
-    .green{color:var(--green)} .red{color:var(--red)} .gold{color:var(--gold)}
-    .card{background:rgba(16,36,59,.86);border:1px solid var(--line);border-radius:26px;padding:20px;margin:14px 0}
-    h2{font-size:20px;margin:0 0 14px}
-    input,select,button{
-      width:100%;border:1px solid var(--line);background:#071525;color:var(--text);
-      padding:14px 15px;border-radius:16px;font-size:16px;outline:none
+    .hero::after{content:"";position:absolute;right:-70px;top:-70px;width:210px;height:210px;border-radius:50%;background:rgba(102,243,228,.14);filter:blur(2px)}
+    .hello{font-size:15px;color:#d9e8f4;margin-bottom:18px;position:relative;z-index:1}
+    .label{font-size:13px;color:var(--muted);font-weight:700}
+    .net{font-size:48px;font-weight:950;letter-spacing:-.06em;margin:6px 0 4px;position:relative;z-index:1}
+    .delta{font-weight:850;margin-bottom:18px}
+    .green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.cyan{color:var(--cyan)}
+    .progressLine{height:15px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden;margin:14px 0 13px}
+    .progressFill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--cyan),var(--green));width:0%;transition:.8s cubic-bezier(.2,.8,.2,1)}
+    .between{display:flex;justify-content:space-between;gap:12px;align-items:center}
+    .miniGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+    .mini{
+      background:rgba(5,8,18,.52);border:1px solid rgba(255,255,255,.08);
+      padding:15px;border-radius:22px
     }
-    input:focus,select:focus{border-color:rgba(110,231,216,.65)}
-    .formgrid{display:grid;gap:10px}
-    .btn{background:linear-gradient(135deg,#49d7c8,#6ee778);color:#06131f;font-weight:900;border:0}
-    .ghost{background:rgba(255,255,255,.06);color:var(--text)}
-    .danger{background:rgba(255,107,122,.13);color:#ff9aa5}
-    .list{display:grid;gap:10px}
-    .assetItem{display:flex;justify-content:space-between;gap:12px;background:rgba(255,255,255,.05);padding:14px;border-radius:18px}
-    .muted{color:var(--muted)}
-    canvas{width:100%;height:190px;background:#071525;border-radius:22px;border:1px solid var(--line)}
+    .mini b{display:block;font-size:23px;margin-top:6px;letter-spacing:-.03em}
+    .card{
+      margin-top:14px;padding:18px;border-radius:28px;border:1px solid var(--line);
+      background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.04));
+      box-shadow:0 14px 45px rgba(0,0,0,.22)
+    }
+    h2{font-size:19px;margin:0 0 14px;letter-spacing:-.02em}
+    .assets{display:grid;gap:10px}
+    .asset{
+      display:flex;justify-content:space-between;align-items:center;gap:12px;
+      padding:13px 14px;border-radius:19px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.055)
+    }
+    .asset .name{display:flex;align-items:center;gap:10px;color:#dce8f4;font-weight:700}
+    .emoji{width:32px;height:32px;border-radius:12px;background:rgba(255,255,255,.08);display:grid;place-items:center}
+    .amount{font-weight:900}
+    input,button,textarea{
+      width:100%;border:1px solid var(--line);border-radius:18px;background:rgba(5,10,20,.72);
+      color:var(--text);font-size:16px;padding:15px 15px;outline:none;
+    }
+    input:focus,textarea:focus{border-color:rgba(102,243,228,.7);box-shadow:0 0 0 4px rgba(102,243,228,.08)}
+    .form{display:grid;gap:10px}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .primary{
+      border:0;color:#041018;font-weight:950;background:linear-gradient(135deg,var(--cyan),var(--green));
+      box-shadow:0 14px 35px rgba(102,243,228,.16)
+    }
+    .secondary{background:rgba(255,255,255,.07);font-weight:800}
+    .danger{background:rgba(255,115,129,.14);color:#ffb0b8;font-weight:800}
+    .hint{color:var(--muted);font-size:13px;line-height:1.55}
+    canvas{width:100%;height:210px;border-radius:22px;background:rgba(5,10,20,.6);border:1px solid rgba(255,255,255,.075)}
+    .history{display:grid;gap:10px}
+    .historyItem{display:flex;justify-content:space-between;align-items:center;padding:14px;border-radius:18px;background:rgba(255,255,255,.055)}
+    .achievements{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .ach{padding:14px;border-radius:20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);opacity:.42}
+    .ach.unlocked{opacity:1;background:linear-gradient(145deg,rgba(255,213,106,.16),rgba(255,255,255,.055));border-color:rgba(255,213,106,.25)}
+    .ach b{display:block;margin-top:6px}
+    .quote{font-size:15px;line-height:1.7;color:#dce8f4}
     nav{
-      position:fixed;left:0;right:0;bottom:0;background:rgba(4,10,18,.92);backdrop-filter:blur(18px);
-      border-top:1px solid var(--line);display:flex;justify-content:center;padding:10px 8px calc(10px + env(safe-area-inset-bottom))
+      position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;
+      padding:10px 10px calc(10px + env(safe-area-inset-bottom));
+      background:rgba(5,8,18,.82);backdrop-filter:blur(20px);border-top:1px solid var(--line)
     }
-    .tabs{max-width:520px;width:100%;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-    .tab{padding:12px 8px;border-radius:18px;text-align:center;color:#b9c7d4;font-size:13px}
-    .tab.active{background:rgba(110,231,216,.18);color:white}
-    .screen{display:none}.screen.active{display:block}
-    .quote{font-size:15px;line-height:1.65;color:#d9e8f1}
-    .badge{display:inline-block;padding:7px 10px;border-radius:999px;background:rgba(255,209,102,.13);color:var(--gold);font-weight:800;font-size:13px}
+    .tabs{max-width:560px;width:100%;display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+    .tab{border-radius:18px;text-align:center;padding:10px 4px;color:#aebbd0;font-size:12px;font-weight:800}
+    .tab.active{background:rgba(102,243,228,.16);color:white}
+    .fab{
+      position:fixed;right:20px;bottom:92px;width:58px;height:58px;border-radius:22px;border:0;
+      background:linear-gradient(135deg,var(--cyan),var(--blue));color:#06101b;font-size:30px;font-weight:900;
+      box-shadow:0 18px 45px rgba(102,243,228,.20);z-index:4
+    }
+    .toast{
+      position:fixed;left:50%;bottom:160px;transform:translateX(-50%) translateY(20px);
+      background:rgba(10,18,32,.94);border:1px solid var(--line);padding:13px 16px;border-radius:999px;
+      opacity:0;transition:.25s;z-index:10;white-space:nowrap
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:30}
+    .piece{position:absolute;width:9px;height:14px;border-radius:2px;animation:fall 1.6s linear forwards}
+    @keyframes fall{to{transform:translateY(105vh) rotate(620deg);opacity:0}}
   </style>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <div class="brand">
-        <div class="logo">T</div>
-        <div><h1>TOWA LIFE OS</h1><div class="sub">30歳1000万円までの人生ダッシュボード</div></div>
-      </div>
-      <div class="pill" id="today"></div>
-    </header>
-
-    <section id="home" class="screen active">
-      <div class="hero">
-        <div class="label">現在の総資産（借金差引）</div>
-        <div class="big" id="netWorth">¥0</div>
-        <div class="bar"><div class="fill" id="progressFill"></div></div>
-        <div class="row"><span class="muted">30歳1,000万円まで</span><b id="remain">¥10,000,000</b></div>
-        <div class="grid">
-          <div class="mini"><span class="muted">達成率</span><b id="progress">0.0%</b></div>
-          <div class="mini"><span class="muted">今月増減</span><b id="monthlyChange" class="green">+¥0</b></div>
-          <div class="mini"><span class="muted">生活防衛</span><b id="defense">0.0ヶ月</b></div>
-          <div class="mini"><span class="muted">自由レベル</span><b id="level" class="gold">Lv.0</b></div>
-        </div>
-      </div>
-      <div class="card">
-        <h2>📈 資産推移</h2>
-        <canvas id="chart" width="680" height="260"></canvas>
-      </div>
-      <div class="card">
-        <h2>💬 今日の一言</h2>
-        <div class="quote" id="quote"></div>
-      </div>
-    </section>
-
-    <section id="input" class="screen">
-      <div class="card">
-        <h2>✍️ 月次入力</h2>
-        <div class="formgrid">
-          <input id="month" type="month">
-          <input id="bank" inputmode="numeric" placeholder="銀行残高">
-          <input id="cash" inputmode="numeric" placeholder="現金">
-          <input id="paypay" inputmode="numeric" placeholder="PayPay">
-          <input id="medals" inputmode="numeric" placeholder="貯玉価値">
-          <input id="invest" inputmode="numeric" placeholder="投資資産">
-          <input id="other" inputmode="numeric" placeholder="その他資産">
-          <input id="debt" inputmode="numeric" placeholder="借金残高">
-          <input id="expense" inputmode="numeric" placeholder="月の生活費目安">
-          <button class="btn" onclick="saveMonth()">保存する</button>
-        </div>
-      </div>
-      <div class="card">
-        <h2>💰 資産内訳</h2>
-        <div class="list" id="assetList"></div>
-      </div>
-    </section>
-
-    <section id="history" class="screen">
-      <div class="card">
-        <h2>📊 履歴</h2>
-        <div class="list" id="historyList"></div>
-      </div>
-    </section>
-
-    <section id="settings" class="screen">
-      <div class="card">
-        <h2>⚙️ 設定</h2>
-        <div class="formgrid">
-          <input id="goal" inputmode="numeric" placeholder="目標金額 例: 10000000">
-          <input id="targetAge" inputmode="numeric" placeholder="目標年齢 例: 30">
-          <button class="btn" onclick="saveSettings()">設定を保存</button>
-          <button class="ghost" onclick="exportData()">バックアップを書き出す</button>
-          <button class="danger" onclick="resetAll()">全データ削除</button>
-        </div>
-      </div>
-      <div class="card">
-        <span class="badge">Alpha → V1</span>
-        <p class="muted">このアプリは端末のブラウザ内に保存されます。GitHubには個人の金額データはアップされません。</p>
-      </div>
-    </section>
+<div class="app">
+  <div class="top">
+    <div class="brand"><div class="logo">T</div><div><div class="eyebrow">PROJECT FREEDOM</div><h1>TOWA LIFE</h1></div></div>
+    <div class="datePill" id="datePill"></div>
   </div>
 
-  <nav>
-    <div class="tabs">
-      <div class="tab active" onclick="show('home',this)">🏠 HOME</div>
-      <div class="tab" onclick="show('input',this)">✍️ 入力</div>
-      <div class="tab" onclick="show('history',this)">📈 履歴</div>
-      <div class="tab" onclick="show('settings',this)">⚙️ 設定</div>
+  <section id="home" class="screen active">
+    <div class="hero">
+      <div class="hello" id="greeting">Good Morning, TOWA</div>
+      <div class="label">総資産 / Net Worth</div>
+      <div class="net" id="netWorth">¥0</div>
+      <div class="delta" id="monthlyDelta">+¥0 今月</div>
+      <div class="progressLine"><div class="progressFill" id="progressFill"></div></div>
+      <div class="between"><span class="hint">30歳1000万円まで</span><b id="remaining">あと ¥10,000,000</b></div>
+      <div class="miniGrid">
+        <div class="mini"><span class="label">達成率</span><b id="progressPct">0.0%</b></div>
+        <div class="mini"><span class="label">自由レベル</span><b id="freedomLevel" class="gold">Lv.0</b></div>
+        <div class="mini"><span class="label">過去最高</span><b id="highScore">¥0</b></div>
+        <div class="mini"><span class="label">生活防衛</span><b id="defenseMonths">0.0ヶ月</b></div>
+      </div>
     </div>
-  </nav>
+
+    <div class="card">
+      <h2>💼 資産内訳</h2>
+      <div class="assets" id="assetList"></div>
+    </div>
+
+    <div class="card">
+      <h2>📈 Growth</h2>
+      <canvas id="lineChart" width="700" height="280"></canvas>
+    </div>
+
+    <div class="card">
+      <h2>💬 今日の一言</h2>
+      <div class="quote" id="quote"></div>
+    </div>
+  </section>
+
+  <section id="input" class="screen">
+    <div class="card">
+      <h2>⚡ 30秒入力</h2>
+      <div class="form">
+        <input id="month" type="month" />
+        <div class="two"><input id="bank" inputmode="numeric" placeholder="銀行"><input id="cash" inputmode="numeric" placeholder="現金"></div>
+        <div class="two"><input id="paypay" inputmode="numeric" placeholder="PayPay"><input id="medals" inputmode="numeric" placeholder="貯玉価値"></div>
+        <div class="two"><input id="invest" inputmode="numeric" placeholder="投資"><input id="other" inputmode="numeric" placeholder="その他資産"></div>
+        <div class="two"><input id="debt" inputmode="numeric" placeholder="借金残高"><input id="expense" inputmode="numeric" placeholder="月生活費"></div>
+        <button class="primary" onclick="saveMonth()">保存してHOMEへ</button>
+        <p class="hint">金額はざっくりでOK。月末に1回だけ入力する運用がおすすめ。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="history" class="screen">
+    <div class="card">
+      <h2>📊 月次履歴</h2>
+      <div class="history" id="historyList"></div>
+    </div>
+  </section>
+
+  <section id="goals" class="screen">
+    <div class="card">
+      <h2>🏆 実績</h2>
+      <div class="achievements" id="achievements"></div>
+    </div>
+    <div class="card">
+      <h2>🎯 目標設定</h2>
+      <div class="form">
+        <input id="goal" inputmode="numeric" placeholder="目標金額">
+        <input id="targetAge" inputmode="numeric" placeholder="目標年齢">
+        <button class="primary" onclick="saveSettings()">目標を保存</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="settings" class="screen">
+    <div class="card">
+      <h2>⚙️ Backup</h2>
+      <div class="form">
+        <button class="secondary" onclick="copyBackup()">バックアップをコピー</button>
+        <textarea id="backupText" rows="5" placeholder="バックアップを貼り付け"></textarea>
+        <button class="secondary" onclick="restoreBackup()">バックアップを復元</button>
+        <button class="danger" onclick="resetAll()">全データ削除</button>
+      </div>
+      <p class="hint">金額データはこのiPhoneのブラウザ内に保存。GitHubにはアップされません。</p>
+    </div>
+  </section>
+</div>
+
+<button class="fab" onclick="showScreen('input')">＋</button>
+<div class="toast" id="toast"></div>
+<div class="confetti" id="confetti"></div>
+
+<nav>
+  <div class="tabs">
+    <div class="tab active" onclick="showScreen('home',this)">🏠<br>Home</div>
+    <div class="tab" onclick="showScreen('input',this)">✍️<br>Input</div>
+    <div class="tab" onclick="showScreen('history',this)">📈<br>Log</div>
+    <div class="tab" onclick="showScreen('goals',this)">🏆<br>Goal</div>
+    <div class="tab" onclick="showScreen('settings',this)">⚙️<br>Set</div>
+  </div>
+</nav>
 
 <script>
-const KEY="towa-life-os-v1";
-const yen=n=>"¥"+Math.round(Number(n||0)).toLocaleString("ja-JP");
-const num=id=>Number((document.getElementById(id).value||"0").replaceAll(",",""));
+const KEY="towa-life-os-v2";
+const DEFAULT={settings:{goal:10000000,targetAge:30},months:[]};
 const quotes=[
- "未来の自由は、今日の1入力から。",
+ "自由は、今日の積み上げから始まる。",
+ "一発逆転より、折れない仕組み。",
+ "30歳の自分が、今日の入力に感謝する。",
+ "資産は数字。自由は選択肢。",
  "昨日より1%自由になろう。",
- "一発逆転より、折れない積み上げ。",
- "30歳の自分が、今日の自分に感謝する。",
- "資産は数字。自由は選択肢。"
+ "焦らず、でも止まらず。"
 ];
-function load(){return JSON.parse(localStorage.getItem(KEY)||'{"settings":{"goal":10000000,"targetAge":30},"months":[]}')}
-function store(d){localStorage.setItem(KEY,JSON.stringify(d))}
+const achievementsDef=[
+ {id:"first",title:"はじめの一歩",desc:"初回入力",check:d=>d.months.length>=1},
+ {id:"100k",title:"10万円突破",desc:"土台作り開始",check:d=>currentNet(d)>=100000},
+ {id:"500k",title:"50万円突破",desc:"安定へ前進",check:d=>currentNet(d)>=500000},
+ {id:"1m",title:"100万円突破",desc:"第一目標達成",check:d=>currentNet(d)>=1000000},
+ {id:"3plus",title:"3ヶ月連続入力",desc:"習慣化",check:d=>d.months.length>=3},
+ {id:"debtzero",title:"借金完済",desc:"自由度爆上げ",check:d=>latest(d)&&latest(d).debt===0}
+];
+
+function yen(n){return "¥"+Math.round(Number(n||0)).toLocaleString("ja-JP")}
+function raw(id){return (document.getElementById(id).value||"").replaceAll(",","")}
+function val(id){return Number(raw(id)||0)}
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||DEFAULT}catch(e){return DEFAULT}}
+function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+function latest(d=data){return d.months[d.months.length-1]||null}
+function net(m){return m?(m.bank+m.cash+m.paypay+m.medals+m.invest+m.other-m.debt):0}
+function currentNet(d=data){return net(latest(d))}
 let data=load();
 
 function init(){
- const d=new Date();
- today.textContent=`${d.getMonth()+1}月${d.getDate()}日`;
- month.value=d.toISOString().slice(0,7);
- goal.value=data.settings.goal;
- targetAge.value=data.settings.targetAge;
- quote.textContent=quotes[d.getDate()%quotes.length];
+ const now=new Date();
+ datePill.textContent=(now.getMonth()+1)+"/"+now.getDate();
+ const h=now.getHours();
+ greeting.textContent=(h<11?"Good Morning":h<18?"Good Afternoon":"Good Evening")+", TOWA";
+ month.value=now.toISOString().slice(0,7);
+ goal.value=data.settings.goal||10000000;
+ targetAge.value=data.settings.targetAge||30;
+ quote.textContent=quotes[now.getDate()%quotes.length];
  render();
 }
-function latest(){return data.months[data.months.length-1]||null}
-function net(m){return (m.bank+m.cash+m.paypay+m.medals+m.invest+m.other)-m.debt}
-function saveMonth(){
- const m={month:month.value,bank:num("bank"),cash:num("cash"),paypay:num("paypay"),medals:num("medals"),invest:num("invest"),other:num("other"),debt:num("debt"),expense:num("expense")};
- const i=data.months.findIndex(x=>x.month===m.month);
- if(i>=0)data.months[i]=m; else data.months.push(m);
- data.months.sort((a,b)=>a.month.localeCompare(b.month));
- store(data); render(); show("home",document.querySelectorAll(".tab")[0]);
+
+function animateNumber(el,to){
+ const start=Number(el.dataset.val||0), dur=650, t0=performance.now();
+ function step(t){
+  const p=Math.min(1,(t-t0)/dur), eased=1-Math.pow(1-p,3);
+  el.textContent=yen(start+(to-start)*eased);
+  if(p<1)requestAnimationFrame(step); else el.dataset.val=to;
+ }
+ requestAnimationFrame(step);
 }
-function saveSettings(){data.settings.goal=num("goal")||10000000; data.settings.targetAge=num("targetAge")||30; store(data); render();}
+
 function render(){
- const m=latest(), goal=data.settings.goal||10000000;
- const current=m?net(m):0, prev=data.months.length>1?net(data.months[data.months.length-2]):0;
- const change=m?current-prev:0, pct=Math.min(100,current/goal*100);
- netWorth.textContent=yen(current); remain.textContent=yen(Math.max(0,goal-current));
- progress.textContent=pct.toFixed(1)+"%"; progressFill.style.width=pct+"%";
- monthlyChange.textContent=(change>=0?"+":"")+yen(change).replace("¥","¥");
- monthlyChange.className=change>=0?"green":"red";
- defense.textContent=m&&m.expense?((m.bank+m.cash+m.paypay)/m.expense).toFixed(1)+"ヶ月":"0.0ヶ月";
- level.textContent="Lv."+Math.floor(pct/10);
- renderAssets(m); renderHistory(); drawChart();
+ const m=latest(); const cur=currentNet(); const goalAmount=Number(data.settings.goal||10000000);
+ const prev=data.months.length>1?net(data.months[data.months.length-2]):0;
+ const delta=m?cur-prev:0; const pct=Math.max(0,Math.min(100,cur/goalAmount*100));
+ animateNumber(netWorth,cur);
+ monthlyDelta.textContent=(delta>=0?"+":"")+yen(delta).replace("¥","¥")+" 今月";
+ monthlyDelta.className="delta "+(delta>=0?"green":"red");
+ progressFill.style.width=pct+"%"; progressPct.textContent=pct.toFixed(1)+"%";
+ remaining.textContent="あと "+yen(Math.max(0,goalAmount-cur));
+ highScore.textContent=yen(Math.max(0,...data.months.map(net)));
+ const level=Math.floor(pct/10);
+ const levelNames=["Start","土台作り","前進","安定","加速","余裕","防御力UP","選択肢拡大","自由接近","FIRE圏内","Freedom"];
+ freedomLevel.textContent="Lv."+level+" "+(levelNames[level]||"Freedom");
+ defenseMonths.textContent=m&&m.expense?((m.bank+m.cash+m.paypay)/m.expense).toFixed(1)+"ヶ月":"0.0ヶ月";
+ renderAssets(m); renderHistory(); renderAchievements(); drawLine();
 }
+
 function renderAssets(m){
- const items=m?[["銀行",m.bank],["現金",m.cash],["PayPay",m.paypay],["貯玉",m.medals],["投資",m.invest],["その他",m.other],["借金",-m.debt]]:[];
- assetList.innerHTML=items.length?items.map(([k,v])=>`<div class="assetItem"><span>${k}</span><b class="${v<0?'red':''}">${yen(v)}</b></div>`).join(""):'<div class="muted">月次入力すると表示される</div>';
+ const list=[
+  ["🏦","銀行",m?.bank||0],["💴","現金",m?.cash||0],["📱","PayPay",m?.paypay||0],
+  ["🎰","貯玉",m?.medals||0],["📈","投資",m?.invest||0],["✨","その他",m?.other||0],["💳","借金",-(m?.debt||0)]
+ ];
+ assetList.innerHTML=list.map(([e,n,a])=>`<div class="asset"><div class="name"><span class="emoji">${e}</span>${n}</div><div class="amount ${a<0?'red':''}">${yen(a)}</div></div>`).join("");
 }
+
 function renderHistory(){
- historyList.innerHTML=data.months.length?data.months.slice().reverse().map(m=>`<div class="assetItem"><span>${m.month}</span><b>${yen(net(m))}</b></div>`).join(""):'<div class="muted">まだ履歴はありません</div>';
+ if(!data.months.length){historyList.innerHTML='<div class="hint">まだ入力がありません。</div>';return}
+ historyList.innerHTML=data.months.slice().reverse().map((m,i,arr)=>{
+  const n=net(m); return `<div class="historyItem"><div><b>${m.month}</b><div class="hint">総資産</div></div><b>${yen(n)}</b></div>`
+ }).join("");
 }
-function drawChart(){
- const c=document.getElementById("chart"), ctx=c.getContext("2d"); ctx.clearRect(0,0,c.width,c.height);
- ctx.strokeStyle="rgba(255,255,255,.16)"; ctx.lineWidth=2;
- for(let y=40;y<240;y+=50){ctx.beginPath();ctx.moveTo(50,y);ctx.lineTo(640,y);ctx.stroke();}
- if(data.months.length<2){ctx.fillStyle="#91a4b8";ctx.font="28px sans-serif";ctx.fillText("月次入力するとグラフが出る",160,145);return}
- const vals=data.months.map(net), max=Math.max(...vals,1), min=Math.min(...vals,0), range=max-min||1;
- ctx.strokeStyle="#6ee7d8";ctx.lineWidth=5;ctx.beginPath();
- vals.forEach((v,i)=>{const x=55+i*(570/(vals.length-1)); const y=230-((v-min)/range)*180; if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y);});
- ctx.stroke();
+
+function renderAchievements(){
+ achievements.innerHTML=achievementsDef.map(a=>{
+  const ok=a.check(data);
+  return `<div class="ach ${ok?'unlocked':''}"><span>${ok?'🏆':'🔒'}</span><b>${a.title}</b><div class="hint">${a.desc}</div></div>`
+ }).join("");
 }
-function show(id,el){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));el.classList.add("active");}
-function exportData(){navigator.clipboard.writeText(JSON.stringify(data,null,2)); alert("バックアップをコピーしました");}
-function resetAll(){if(confirm("全部消す？")){localStorage.removeItem(KEY); data=load(); render();}}
+
+function drawLine(){
+ const c=lineChart, ctx=c.getContext("2d"), W=c.width,H=c.height;
+ ctx.clearRect(0,0,W,H);
+ const vals=data.months.map(net);
+ ctx.strokeStyle="rgba(255,255,255,.10)"; ctx.lineWidth=2;
+ for(let y=45;y<H-25;y+=48){ctx.beginPath();ctx.moveTo(36,y);ctx.lineTo(W-24,y);ctx.stroke()}
+ if(vals.length<2){ctx.fillStyle="#91a0b6";ctx.font="26px -apple-system";ctx.fillText("2ヶ月以上入力で推移表示",185,150);return}
+ const min=Math.min(0,...vals), max=Math.max(...vals,1), range=max-min||1;
+ ctx.beginPath();
+ vals.forEach((v,i)=>{const x=42+i*((W-80)/(vals.length-1)); const y=H-34-((v-min)/range)*(H-82); i?ctx.lineTo(x,y):ctx.moveTo(x,y)});
+ const grad=ctx.createLinearGradient(40,0,W,0); grad.addColorStop(0,"#66f3e4"); grad.addColorStop(1,"#7dff9b");
+ ctx.strokeStyle=grad; ctx.lineWidth=6; ctx.lineCap="round"; ctx.lineJoin="round"; ctx.stroke();
+ vals.forEach((v,i)=>{const x=42+i*((W-80)/(vals.length-1)); const y=H-34-((v-min)/range)*(H-82); ctx.fillStyle="#66f3e4"; ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2); ctx.fill();});
+}
+
+function saveMonth(){
+ const m={month:month.value,bank:val("bank"),cash:val("cash"),paypay:val("paypay"),medals:val("medals"),invest:val("invest"),other:val("other"),debt:val("debt"),expense:val("expense")};
+ const before=currentNet();
+ const idx=data.months.findIndex(x=>x.month===m.month);
+ if(idx>=0)data.months[idx]=m; else data.months.push(m);
+ data.months.sort((a,b)=>a.month.localeCompare(b.month));
+ save(); render(); showScreen("home"); toastMsg("保存したよ");
+ if(before<1000000 && currentNet()>=1000000) confettiBoom();
+}
+
+function saveSettings(){data.settings.goal=val("goal")||10000000; data.settings.targetAge=val("targetAge")||30; save(); render(); toastMsg("設定を保存したよ")}
+function copyBackup(){navigator.clipboard.writeText(JSON.stringify(data,null,2)); toastMsg("バックアップをコピー")}
+function restoreBackup(){try{data=JSON.parse(backupText.value); save(); render(); toastMsg("復元したよ")}catch(e){alert("バックアップ形式が違うかも")}}
+function resetAll(){if(confirm("全部消していい？")){localStorage.removeItem(KEY); data=JSON.parse(JSON.stringify(DEFAULT)); save(); render(); toastMsg("削除したよ")}}
+
+function showScreen(id,el){
+ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+ if(el)el.classList.add("active"); else document.querySelectorAll(".tab").forEach(t=>{if(t.textContent.toLowerCase().includes(id==="home"?"home":id==="input"?"input":id==="history"?"log":id==="goals"?"goal":"set"))t.classList.add("active")});
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+function toastMsg(msg){toast.textContent=msg;toast.classList.add("show");setTimeout(()=>toast.classList.remove("show"),1600)}
+function confettiBoom(){
+ confetti.innerHTML="";
+ for(let i=0;i<90;i++){const p=document.createElement("div");p.className="piece";p.style.left=Math.random()*100+"%";p.style.top="-20px";p.style.background=["#66f3e4","#7dff9b","#ffd56a","#7b8cff","#ff7381"][i%5];p.style.animationDelay=Math.random()*.35+"s";confetti.appendChild(p)}
+ setTimeout(()=>confetti.innerHTML="",2200);
+}
 init();
 </script>
 </body>
