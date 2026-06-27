@@ -1,22 +1,17 @@
-# TOWA LIFE OS V2
+# TOWA LIFE OS V3
 
 Project Freedom.
 
-30歳までに総資産1,000万円を目指すための、iPhoneホーム画面対応ライフダッシュボード。
-
-## V2 Features
-- Apple風 + 金融アプリ風 + ゲーム感のUI
-- 総資産 / 達成率 / 自由レベル
-- 銀行・現金・PayPay・貯玉・投資・借金の管理
-- 月次入力
-- 資産推移グラフ
+## V3 Features
+- HOMEは「今月の成長」を主役に変更
+- 資産と純資産を分けて表示
+- 本業収入 / 副業・スロ収支
+- タスク / メモ
+- 週1支出ログ
+- 店舗別貯玉管理
+- Reward Vault
 - 実績解除
+- 月次履歴・グラフ
 - バックアップ / 復元
-- ホーム画面追加対応
 
-## Data
-金額データはブラウザの localStorage に保存されます。GitHubには保存されません。
-
-
-## Icon Fix
-Added PNG apple-touch-icon for iPhone home screen.
+データは端末ブラウザの localStorage に保存され、GitHubには保存されません。

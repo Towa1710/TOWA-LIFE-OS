@@ -1,11 +1,10 @@
 {
-  "name": "TOWA LIFE OS",
+  "name": "TOWA LIFE OS V3",
   "short_name": "TOWA LIFE",
-  "description": "Project Freedom - personal life dashboard for TOWA",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#060914",
-  "theme_color": "#060914",
+  "background_color": "#050713",
+  "theme_color": "#050713",
   "icons": [
     {
       "src": "apple-touch-icon.png",
