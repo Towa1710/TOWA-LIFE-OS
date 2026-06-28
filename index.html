@@ -10,7 +10,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon.svg">
-<title>TOWA LIFE OS V3.1</title>
+<title>TOWA LIFE OS V3.2</title>
 <style>
 :root{
   --bg:#050713;--surface:#0c1324;--surface2:#111b31;--glass:rgba(255,255,255,.075);
@@ -42,6 +42,7 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.25;ba
 .between{display:flex;justify-content:space-between;gap:10px;align-items:center}.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:16px}.mini{border:1px solid rgba(255,255,255,.07);background:rgba(4,7,16,.53);border-radius:22px;padding:15px}.mini b{display:block;font-size:22px;margin-top:6px}
 h2{font-size:20px;margin:0 0 14px;letter-spacing:-.02em}.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 14px;border-radius:18px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.045);margin:9px 0}
 .left{display:flex;gap:10px;align-items:center;font-weight:850}.ico{width:32px;height:32px;border-radius:12px;background:rgba(255,255,255,.08);display:grid;place-items:center}.amt{font-weight:950}
+.deleteBtn{width:auto;padding:8px 10px;border-radius:12px;background:rgba(255,115,132,.14);color:#ffb0bb;font-size:13px;font-weight:900;border:1px solid rgba(255,115,132,.22)}
 input,select,textarea,button{width:100%;border:1px solid var(--line);border-radius:17px;background:rgba(5,10,20,.72);color:var(--text);font-size:16px;padding:14px;outline:none}
 textarea{min-height:92px}input:focus,select:focus,textarea:focus{border-color:rgba(101,244,230,.75);box-shadow:0 0 0 4px rgba(101,244,230,.08)}
 .form{display:grid;gap:10px}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.primary{border:0;background:linear-gradient(135deg,var(--cyan),var(--green));color:#041018;font-weight:950}.secondary{font-weight:850;background:rgba(255,255,255,.075)}.danger{font-weight:850;color:#ffb0bb;background:rgba(255,115,132,.14)}
@@ -173,12 +174,14 @@ nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;p
 </div></nav>
 
 <script>
-const KEY="towa-life-os-v3-pro";
+const KEY="TOWA_LIFE_OS_DATA";
+const OLD_KEYS=["towa-life-os-v3-pro","towa-life-os-v3","towa-life-os-v2"];
 const DEFAULT={settings:{goal:10000000},months:[],tasks:[],spends:[],stores:[],rewards:[]};
 let data=load();
 const yen=n=>"¥"+Math.round(Number(n||0)).toLocaleString("ja-JP");
 const val=id=>Number((document.getElementById(id).value||"0").replaceAll(",",""));
-function load(){try{return JSON.parse(localStorage.getItem(KEY))||structuredClone(DEFAULT)}catch(e){return JSON.parse(JSON.stringify(DEFAULT))}}
+function normalize(d){d=d||{};return{settings:d.settings||{goal:10000000},months:Array.isArray(d.months)?d.months:[],tasks:Array.isArray(d.tasks)?d.tasks:[],spends:Array.isArray(d.spends)?d.spends.map((x,i)=>({...x,id:x.id||Date.now()+i})):[],stores:Array.isArray(d.stores)?d.stores.map((x,i)=>({...x,id:x.id||Date.now()+i})):[],rewards:Array.isArray(d.rewards)?d.rewards.map((x,i)=>({...x,id:x.id||Date.now()+i})):[]}}
+function load(){try{let current=localStorage.getItem(KEY);if(current)return normalize(JSON.parse(current));for(const k of OLD_KEYS){const old=localStorage.getItem(k);if(old){const migrated=normalize(JSON.parse(old));localStorage.setItem(KEY,JSON.stringify(migrated));return migrated}}return JSON.parse(JSON.stringify(DEFAULT))}catch(e){return JSON.parse(JSON.stringify(DEFAULT))}}
 function save(){localStorage.setItem(KEY,JSON.stringify(data))}
 function latest(){return data.months[data.months.length-1]||null}
 function gross(m=latest()){return m?(m.bank+m.cash+m.paypay+m.medals+m.invest+m.other):0}
@@ -220,24 +223,30 @@ function saveMonth(){
 }
 function addTask(){if(!taskText.value.trim())return; data.tasks.push({id:Date.now(),text:taskText.value.trim(),priority:taskPriority.value,done:false}); taskText.value=""; save(); render();}
 function toggleTask(id){const t=data.tasks.find(x=>x.id===id); if(t)t.done=!t.done; save(); render();}
+function deleteTask(id){if(!confirm("このタスクを消す？"))return; data.tasks=data.tasks.filter(t=>t.id!==id); save(); render(); toastMsg("削除したよ");}
 function renderTasks(){
  const all=data.tasks, done=all.filter(t=>t.done).length; taskPct.textContent=all.length?Math.round(done/all.length*100)+"%":"0%";
  const today=all.filter(t=>!t.done&&t.priority==="今日");
- todayTasks.innerHTML=today.length?today.slice(0,4).map(t=>`<div class="row" onclick="toggleTask(${t.id})"><div class="left"><span class="check"></span>${t.text}</div><span class="hint">${t.priority}</span></div>`).join(""):`<div class="hint">今日のタスクはなし</div>`;
- taskList.innerHTML=all.length?all.map(t=>`<div class="row" onclick="toggleTask(${t.id})"><div class="left ${t.done?'done':''}"><span class="check">${t.done?'✓':''}</span>${t.text}</div><span class="hint">${t.priority}</span></div>`).join(""):`<div class="hint">洗剤買う、PayPayチャージなどを書けます。</div>`;
+ todayTasks.innerHTML=today.length?today.slice(0,4).map(t=>`<div class="row"><div class="left" onclick="toggleTask(${t.id})"><span class="check"></span>${t.text}</div><button class="deleteBtn" onclick="deleteTask(${t.id})">削除</button></div>`).join(""):`<div class="hint">今日のタスクはなし</div>`;
+ taskList.innerHTML=all.length?all.map(t=>`<div class="row"><div class="left ${t.done?'done':''}" onclick="toggleTask(${t.id})"><span class="check">${t.done?'✓':''}</span>${t.text}</div><button class="deleteBtn" onclick="deleteTask(${t.id})">削除</button></div>`).join(""):`<div class="hint">洗剤買う、PayPayチャージなどを書けます。</div>`;
 }
-function saveWeeklySpend(){const s={date:new Date().toISOString().slice(0,10),food:val("food"),tobacco:val("tobacco"),uber:val("uber"),fun:val("fun"),gas:val("gas"),other:val("dailyOther")}; data.spends.push(s); save(); render(); toastMsg("支出ログ保存");}
-function renderSpends(){spendList.innerHTML=data.spends.length?data.spends.slice(-5).reverse().map(s=>`<div class="row"><div><b>${s.date}</b><div class="hint">週1支出</div></div><b>${yen(s.food+s.tobacco+s.uber+s.fun+s.gas+s.other)}</b></div>`).join(""):`<div class="hint">PayPay履歴を見ながら週1でざっくり入力。</div>`}
-function saveStore(){if(!storeName.value.trim())return; const s={name:storeName.value.trim(),medals:val("storeMedals"),rate:Number(rate.value||19.76)}; const i=data.stores.findIndex(x=>x.name===s.name); if(i>=0)data.stores[i]=s; else data.stores.push(s); storeName.value=storeMedals.value=rate.value=""; const total=data.stores.reduce((a,x)=>a+x.medals*x.rate,0); const m=latest(); if(m)m.medals=total; save(); render(); toastMsg("貯玉更新");}
-function renderStores(){storeList.innerHTML=data.stores.length?data.stores.map(s=>`<div class="row"><div class="left"><span class="ico">🎰</span>${s.name}<span class="hint">${Math.round(s.medals).toLocaleString()}枚</span></div><b>${yen(s.medals*s.rate)}</b></div>`).join(""):`<div class="hint">大曽根、熱田、今池、若宮など店舗ごとに管理。</div>`}
-function renderHistory(){historyList.innerHTML=data.months.length?data.months.slice().reverse().map(m=>`<div class="row"><div><b>${m.month}</b><div class="hint">資産 ${yen(gross(m))}</div></div><b class="${net(m)>=0?'green':'red'}">${yen(net(m))}</b></div>`).join(""):`<div class="hint">月次入力すると履歴が増えます。</div>`}
-function addReward(){if(!rewardTitle.value.trim())return; data.rewards.push({title:rewardTitle.value.trim(),need:val("rewardNeed")}); rewardTitle.value=rewardNeed.value=""; save(); render();}
-function renderRewards(){const cur=gross(); rewardList.innerHTML=data.rewards.length?data.rewards.map(r=>`<div class="row ${cur>=r.need?'':'locked'}"><div class="left"><span class="ico">${cur>=r.need?'🎁':'🔒'}</span>${r.title}</div><b>${yen(r.need)}</b></div>`).join(""):`<div class="hint">例：100万円達成で焼肉、300万円で旅行。</div>`}
+function saveWeeklySpend(){const s={id:Date.now(),date:new Date().toISOString().slice(0,10),food:val("food"),tobacco:val("tobacco"),uber:val("uber"),fun:val("fun"),gas:val("gas"),other:val("dailyOther")}; data.spends.push(s); save(); render(); toastMsg("支出ログ保存");}
+function deleteSpend(id){if(!confirm("この支出ログを消す？"))return; data.spends=data.spends.filter(s=>s.id!==id); save(); render(); toastMsg("削除したよ");}
+function renderSpends(){spendList.innerHTML=data.spends.length?data.spends.slice(-5).reverse().map(s=>`<div class="row"><div><b>${s.date}</b><div class="hint">週1支出</div></div><b>${yen(s.food+s.tobacco+s.uber+s.fun+s.gas+s.other)}</b><button class="deleteBtn" onclick="deleteSpend(${s.id})">削除</button></div>`).join(""):`<div class="hint">PayPay履歴を見ながら週1でざっくり入力。</div>`}
+function saveStore(){if(!storeName.value.trim())return; const s={id:Date.now(),name:storeName.value.trim(),medals:val("storeMedals"),rate:Number(rate.value||19.76)}; const i=data.stores.findIndex(x=>x.name===s.name); if(i>=0){s.id=data.stores[i].id||Date.now();data.stores[i]=s;} else data.stores.push(s); storeName.value=storeMedals.value=rate.value=""; updateMedalAsset(); save(); render(); toastMsg("貯玉更新");}
+function updateMedalAsset(){const total=data.stores.reduce((a,x)=>a+x.medals*x.rate,0); const m=latest(); if(m)m.medals=total;}
+function deleteStore(id){if(!confirm("この店舗データを消す？"))return; data.stores=data.stores.filter(s=>s.id!==id); updateMedalAsset(); save(); render(); toastMsg("削除したよ");}
+function renderStores(){storeList.innerHTML=data.stores.length?data.stores.map(s=>`<div class="row"><div class="left"><span class="ico">🎰</span>${s.name}<span class="hint">${Math.round(s.medals).toLocaleString()}枚</span></div><b>${yen(s.medals*s.rate)}</b><button class="deleteBtn" onclick="deleteStore(${s.id})">削除</button></div>`).join(""):`<div class="hint">大曽根、熱田、今池、若宮など店舗ごとに管理。</div>`}
+function deleteMonth(monthValue){if(!confirm(monthValue+" の月次データを消す？"))return; data.months=data.months.filter(m=>m.month!==monthValue); save(); render(); toastMsg("削除したよ");}
+function renderHistory(){historyList.innerHTML=data.months.length?data.months.slice().reverse().map(m=>`<div class="row"><div><b>${m.month}</b><div class="hint">資産 ${yen(gross(m))}</div></div><b class="${net(m)>=0?'green':'red'}">${yen(net(m))}</b><button class="deleteBtn" onclick="deleteMonth('${m.month}')">削除</button></div>`).join(""):`<div class="hint">月次入力すると履歴が増えます。</div>`}
+function addReward(){if(!rewardTitle.value.trim())return; data.rewards.push({id:Date.now(),title:rewardTitle.value.trim(),need:val("rewardNeed")}); rewardTitle.value=rewardNeed.value=""; save(); render();}
+function deleteReward(id){if(!confirm("このご褒美を消す？"))return; data.rewards=data.rewards.filter(r=>r.id!==id); save(); render(); toastMsg("削除したよ");}
+function renderRewards(){const cur=gross(); rewardList.innerHTML=data.rewards.length?data.rewards.map(r=>`<div class="row ${cur>=r.need?'':'locked'}"><div class="left"><span class="ico">${cur>=r.need?'🎁':'🔒'}</span>${r.title}</div><b>${yen(r.need)}</b><button class="deleteBtn" onclick="deleteReward(${r.id})">削除</button></div>`).join(""):`<div class="hint">例：100万円達成で焼肉、300万円で旅行。</div>`}
 function renderAchievements(){const cur=gross(), n=net(); const ach=[["初入力",data.months.length>0],["資産50万",cur>=500000],["資産100万",cur>=1000000],["純資産プラス",n>=0],["借金完済",latest()?.debt===0&&data.months.length>0],["タスク10個完了",data.tasks.filter(t=>t.done).length>=10]]; achievementList.innerHTML=ach.map(a=>`<div class="row ${a[1]?'':'locked'}"><div class="left"><span class="ico">${a[1]?'🏆':'🔒'}</span>${a[0]}</div><span>${a[1]?'解除':'未解除'}</span></div>`).join("")}
 function saveSettings(){data.settings.goal=val("goal")||10000000; save(); render(); toastMsg("設定保存");}
 function copyBackup(){navigator.clipboard.writeText(JSON.stringify(data,null,2)); toastMsg("コピーしたよ");}
-function restoreBackup(){try{data=JSON.parse(backupText.value); save(); render(); toastMsg("復元したよ");}catch(e){alert("形式が違うかも")}}
-function resetAll(){if(confirm("全部消す？")){localStorage.removeItem(KEY); data=load(); render();}}
+function restoreBackup(){try{data=normalize(JSON.parse(backupText.value)); save(); render(); toastMsg("復元したよ");}catch(e){alert("形式が違うかも")}}
+function resetAll(){if(confirm("全部消す？")){localStorage.removeItem(KEY); data=JSON.parse(JSON.stringify(DEFAULT)); render();}}
 function drawChart(){const c=chart,ctx=c.getContext("2d"),W=c.width,H=c.height;ctx.clearRect(0,0,W,H);ctx.strokeStyle="rgba(255,255,255,.1)";ctx.lineWidth=2;for(let y=45;y<H-25;y+=48){ctx.beginPath();ctx.moveTo(35,y);ctx.lineTo(W-25,y);ctx.stroke()}const vals=data.months.map(net);if(vals.length<2){ctx.fillStyle="#90a0b8";ctx.font="26px sans-serif";ctx.fillText("2ヶ月以上でグラフ表示",210,150);return}const min=Math.min(0,...vals),max=Math.max(...vals,1),range=max-min||1;ctx.beginPath();vals.forEach((v,i)=>{let x=42+i*((W-80)/(vals.length-1)),y=H-34-((v-min)/range)*(H-82);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});const gr=ctx.createLinearGradient(0,0,W,0);gr.addColorStop(0,"#65f4e6");gr.addColorStop(1,"#7dff9b");ctx.strokeStyle=gr;ctx.lineWidth=6;ctx.lineCap="round";ctx.stroke();}
 function showScreen(id,el){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active")); if(el)el.classList.add("active"); window.scrollTo({top:0,behavior:"smooth"});}
 function toastMsg(msg){toast.textContent=msg;toast.classList.add("show");setTimeout(()=>toast.classList.remove("show"),1500);}

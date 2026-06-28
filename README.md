@@ -1,8 +1,6 @@
-# TOWA LIFE OS V3.1
+# TOWA LIFE OS V3.2
 
-V3.1 Fix:
-- HOMEの巨大表示を「純資産/成長」ではなく「現在の資産」に変更
-- 初月の今月成長は +¥0 表示
-- 純資産は小カードで表示
-
-Data is stored in localStorage.
+- 保存キーを固定: TOWA_LIFE_OS_DATA
+- V3/V3.1の旧データを自動移行
+- タスク/週支出/店舗別貯玉/月次履歴/Reward Vaultの削除機能を追加
+- バックアップ/復元対応
